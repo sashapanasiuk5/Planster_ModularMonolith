@@ -5,9 +5,9 @@ public class Identity
     public int Id { get; private set; }
     public Credentials Credentials { get; private set; }
 
-    public Identity(int id, Credentials credentials)
+    private Identity() { }
+    public Identity(Credentials credentials)
     {
-        Id = id;
         Credentials = credentials;
     }
 }

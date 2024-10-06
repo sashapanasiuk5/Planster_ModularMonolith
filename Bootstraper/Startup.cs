@@ -1,6 +1,7 @@
+using Infrastructure;
 using Shared.Infrastructure;
-using Identity.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Users.Infrastructure;
 
 namespace Bootstraper;
 
@@ -17,6 +18,9 @@ public class Startup
     {
         services.AddSharedInfrastructure(Configuration);
         services.AddIdentityModule(Configuration);
+        services.AddUsersModule(Configuration);
+        services.AddEndpointsApiExplorer();
+        services.AddLogging();
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -29,13 +33,14 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+            app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
-
+        
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

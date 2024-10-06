@@ -1,6 +1,8 @@
+using System.Windows.Input;
+using FluentResults;
+using Infrastructure.Dto;
+using MediatR;
+
 namespace Application.Commands;
 
-public class LoginCommand
-{
-    
-}
+public record LoginCommand(LoginDto Dto) : IRequest<Result<SessionDto>>;
