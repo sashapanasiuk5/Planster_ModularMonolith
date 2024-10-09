@@ -1,46 +1,30 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Infrastructure.ModulesInterfaces;
-using Infrastructure.Utils;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shared.Contracts.ModulesInterfaces;
 
-namespace Shared.Infrastructure.Middlewares;
+namespace Infrastructure.Utils;
 
 public class SessionAuthSchemeHandler: AuthenticationHandler<AuthenticationSchemeOptions>
 {
     private readonly IIdentityModule _identityModule;
+    private readonly IEncryptor _encryptor;
 
     public SessionAuthSchemeHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
         IIdentityModule identityModule,
         ILoggerFactory logger,
         ISystemClock systemClock,
+        IEncryptor encryptor,
         UrlEncoder encoder) : base(options, logger, encoder, systemClock)
     {
         _identityModule = identityModule;
+        _encryptor = encryptor;
     }
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        var sessionId = context.Request.Cookies["SessionID"];
-        if (string.IsNullOrWhiteSpace(sessionId))
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
-            
-        var userId = await _identityModule.GetIdentityAsync(sessionId);
-        if (userId != null)
-        {
-            await next(context);
-        }
-        else
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        }
-    }
-
+    
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var sessionId = Context.Request.Cookies["SessionID"];
@@ -49,10 +33,16 @@ public class SessionAuthSchemeHandler: AuthenticationHandler<AuthenticationSchem
             return AuthenticateResult.Fail("No Session ID was specified.");
         }
             
-        var userId = await _identityModule.GetIdentityAsync(sessionId);
-        if (userId != null)
+        var session = await _identityModule.GetSessionAsync(sessionId);
+        if (session != null)
         {
-            var claims = new[] { new Claim(ClaimTypes.Name, userId.Value.ToString()) };
+            var decrypted = _encryptor.Decrypt(session.Id);
+            var claims = new List<Claim>() { new Claim(ClaimTypes.Name, session.IdentityId.ToString()) };
+            foreach (var permission in session.Permissions)
+            {
+                var claim = new Claim($"project_{permission.ProjectId}", permission.Role.ToString());
+                claims.Add(claim);
+            }
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Tokens"));
             var ticket = new AuthenticationTicket(principal, this.Scheme.Name);
             return AuthenticateResult.Success(ticket);

@@ -1,7 +1,8 @@
 using FluentResults;
-using Infrastructure.Dto;
+using Identity.Contracts.Dtos;
 using MediatR;
+using Users.Contracts.Dto;
 
 namespace Application.Commands.AddIdentity;
 
-public record AddIdentityCommand(NewUserDto dto) : IRequest<Result<SessionDto>>;
+public record AddIdentityCommand(int UserId, NewUserDto dto) : IRequest<Result<SessionDto>>;

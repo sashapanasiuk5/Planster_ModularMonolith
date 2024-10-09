@@ -1,5 +1,6 @@
+using FluentResults;
 using MediatR;
 
 namespace Application.Commands.Logout;
 
-public record LogoutCommand(string sessionId) : IRequest<Unit>;
+public record LogoutCommand(string SessionId, int UserId) : IRequest<Result<Unit>>;

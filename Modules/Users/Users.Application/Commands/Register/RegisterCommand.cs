@@ -1,6 +1,7 @@
 using FluentResults;
-using Infrastructure.Dto;
+using Identity.Contracts.Dtos;
 using MediatR;
+using Users.Contracts.Dto;
 
 namespace User.Application.Commands.Register;
 

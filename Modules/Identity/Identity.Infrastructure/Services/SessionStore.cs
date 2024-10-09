@@ -1,6 +1,9 @@
 using Application.Interfaces;
+using Application.Mappers;
+using Domain.Models;
 using FluentResults;
-using Infrastructure.Dto;
+using Identity.Contracts.Dtos;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -15,15 +18,31 @@ public class SessionStore: ISessionStore
     {
         _cache = cache;
     }
-    public async Task<SessionDto?> GetById(string sessionId)
+    public async Task<Session?> GetById(string sessionId)
     {
         var sessionJson = await _cache.GetStringAsync(sessionId);
         if (string.IsNullOrEmpty(sessionJson))
         {
             return null;
         }
-        var userId = Int32.Parse(sessionJson);
-        return new SessionDto() { SessionId = sessionId, UserId = userId };
+        var session = JsonConvert.DeserializeObject<SessionDto>(sessionJson, new JsonSerializerSettings()
+        {
+            ContractResolver = new PrivateResolver()
+        });
+        if(session == null)
+            throw new Exception("Cannot convert session json to Session");
+        return session.ToSession();
+    }
+
+    public async Task<string?> GetRawById(string sessionId)
+    {
+        var sessionJson = await _cache.GetStringAsync(sessionId);
+        if (string.IsNullOrEmpty(sessionJson))
+        {
+            return null;
+        }
+
+        return sessionJson;
     }
 
     public async Task EndSessionAsync(string sessionId)
@@ -31,14 +50,24 @@ public class SessionStore: ISessionStore
         await _cache.RemoveAsync(sessionId);
     }
 
-    public async Task<SessionDto> StartSessionAsync(int userId)
+    public async Task UpdateSessionAsync(Session session)
     {
-        var sessionId = Guid.NewGuid().ToString();
-        await _cache.SetStringAsync(sessionId, userId.ToString());
-        return new SessionDto()
+        await _cache.RemoveAsync(session.Id.ToString());
+        var options = new DistributedCacheEntryOptions()
         {
-            SessionId = sessionId,
-            UserId = userId
+            AbsoluteExpirationRelativeToNow = Session.SessionDuration
         };
+        var payload = JsonConvert.SerializeObject(session.ToDto());
+        await _cache.SetStringAsync(session.Id.ToString(), payload, options);
+    }
+
+    public async Task StartSessionAsync(Session session)
+    {
+        var options = new DistributedCacheEntryOptions()
+        {
+            AbsoluteExpirationRelativeToNow = Session.SessionDuration
+        };
+        var payload = JsonConvert.SerializeObject(session.ToDto());
+        await _cache.SetStringAsync(session.Id.ToString(), payload, options);
     }
 }

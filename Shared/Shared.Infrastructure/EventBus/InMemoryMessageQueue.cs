@@ -1,4 +1,6 @@
 using System.Threading.Channels;
+using Infrastructure.EventBus;
+using Shared.Contracts.EventBus;
 
 namespace Shared.Infrastructure.EventBus;
 

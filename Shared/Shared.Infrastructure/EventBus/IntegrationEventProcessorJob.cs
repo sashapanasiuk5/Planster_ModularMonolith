@@ -2,8 +2,9 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Shared.Infrastructure.EventBus;
 
-namespace Shared.Infrastructure.EventBus;
+namespace Infrastructure.EventBus;
 
 public class IntegrationEventProcessorJob: BackgroundService
 {
@@ -24,7 +25,7 @@ public class IntegrationEventProcessorJob: BackgroundService
             try
             {
                 var integrationEvent = await _messageQueue.Reader.ReadAsync(stoppingToken);
-                _logger.LogInformation($"Processing integration event: {integrationEvent.Id}");
+                _logger.LogInformation($"Processing integration event: {integrationEvent.EventId}");
                 using var scope = _scopeFactory.CreateScope();
                 var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
                 await publisher.Publish(integrationEvent, stoppingToken);

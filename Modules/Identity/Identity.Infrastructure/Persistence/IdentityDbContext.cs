@@ -8,7 +8,7 @@ public class IdentityDbContext: DbContext
     
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
 
-    /*public IdentityDbContext()
+    public IdentityDbContext()
     {
         
     }
@@ -16,13 +16,17 @@ public class IdentityDbContext: DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5433;Database=Planster2DB; Username=postgres; Password=Sekvoya55");
-    }*/
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("identity");
         modelBuilder.Entity<Domain.Models.Identity>()
             .HasKey(x => x.Id);
+
+        modelBuilder.Entity<Domain.Models.Identity>()
+            .Property(p => p.Id)
+            .ValueGeneratedNever();
 
         modelBuilder.Entity<Domain.Models.Identity>()
             .OwnsOne(x => x.Credentials, credentials =>

@@ -21,6 +21,11 @@ public class IdentityRepository: IIdentityRepository
         return await _context.Identities.FirstOrDefaultAsync(x => x.Credentials.Email == email);
     }
 
+    public async Task<Domain.Models.Identity?> GetByIdAsync(int identityId)
+    {
+        return await _context.Identities.FindAsync(identityId);
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

@@ -1,11 +1,11 @@
-﻿using Infrastructure.Utils;
+﻿using Infrastructure.EventBus;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Infrastructure.EventBus;
-using Shared.Infrastructure.Middlewares;
 
-namespace Shared.Infrastructure;
+namespace Infrastructure;
 
 public static class ServiceCollectionExtensions
 {

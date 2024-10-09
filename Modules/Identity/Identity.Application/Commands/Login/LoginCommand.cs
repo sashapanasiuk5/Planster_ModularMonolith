@@ -1,6 +1,6 @@
 using System.Windows.Input;
 using FluentResults;
-using Infrastructure.Dto;
+using Identity.Contracts.Dtos;
 using MediatR;
 
 namespace Application.Commands;

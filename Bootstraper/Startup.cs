@@ -1,6 +1,7 @@
 using Infrastructure;
 using Shared.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Teams.Infrastructure;
 using Users.Infrastructure;
 
 namespace Bootstraper;
@@ -19,6 +20,7 @@ public class Startup
         services.AddSharedInfrastructure(Configuration);
         services.AddIdentityModule(Configuration);
         services.AddUsersModule(Configuration);
+        services.AddTeamsModule(Configuration);
         services.AddEndpointsApiExplorer();
         services.AddLogging();
         services.AddSwaggerGen(c =>

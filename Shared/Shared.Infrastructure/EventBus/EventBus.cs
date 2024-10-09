@@ -1,4 +1,7 @@
-namespace Shared.Infrastructure.EventBus;
+using Shared.Contracts.EventBus;
+using Shared.Infrastructure.EventBus;
+
+namespace Infrastructure.EventBus;
 
 public class EventBus: IEventBus
 {

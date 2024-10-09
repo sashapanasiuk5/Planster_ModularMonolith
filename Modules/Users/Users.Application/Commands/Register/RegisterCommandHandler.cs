@@ -1,9 +1,9 @@
 using FluentResults;
-using Infrastructure.Dto;
-using Infrastructure.IntegrationEvents;
-using Infrastructure.ModulesInterfaces;
+using Identity.Contracts.Dtos;
+using Infrastructure.EventBus;
 using MediatR;
-using Shared.Infrastructure.EventBus;
+using Shared.Contracts.IntegrationEvents;
+using Shared.Contracts.ModulesInterfaces;
 using Users.Infrastructure.Persistence.Repositories;
 
 namespace User.Application.Commands.Register;
@@ -25,7 +25,16 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Ses
        var newUser = new User(request.dto.FirstName, request.dto.LastName, request.dto.Email, request.dto.ImageUrl);
         _unitOfWork.UserRepository.Add(newUser);
         await _unitOfWork.SaveChangesAsync();
-        var session = await _identityModule.AddNewIdentityAsync(request.dto);
+        var session = await _identityModule.AddNewIdentityAsync(request.dto, newUser.Id);
+        await _bus.PublishAsync(new UserRegistered(
+            Guid.NewGuid(),
+            newUser.Id,
+            newUser.FirstName,
+            newUser.LastName,
+            newUser.Email,
+            request.dto.Password,
+            newUser.ImageUrl
+        ));
         return Result.Ok(session);
     }
 }

@@ -1,10 +1,13 @@
-using Infrastructure.Dto;
+using Domain.Models;
+using Identity.Contracts.Dtos;
 
 namespace Application.Interfaces;
 
 public interface ISessionStore
 {
-    Task<SessionDto?> GetById(string sessionId);
+    Task<Session?> GetById(string sessionId);
+    Task<string?> GetRawById(string sessionId);
     Task EndSessionAsync(string sessionId);
-    Task<SessionDto> StartSessionAsync(int userId);
+    Task UpdateSessionAsync(Session session);
+    Task StartSessionAsync(Session session);
 }
