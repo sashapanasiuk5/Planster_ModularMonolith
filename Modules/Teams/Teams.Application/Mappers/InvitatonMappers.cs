@@ -14,7 +14,8 @@ public static class InvitatonMappers
             ProjectId = invitation.Project.Id,
             NumberOfPlaces = invitation.NumberOfPlaces,
             NumberOfInvitedUsers = invitation.NumberOfInvitedUsers,
-            Role = Enum.GetName(invitation.Role)
+            Role = Enum.GetName(invitation.Role),
+            RoleId = invitation.Role,
         };
     }
 }

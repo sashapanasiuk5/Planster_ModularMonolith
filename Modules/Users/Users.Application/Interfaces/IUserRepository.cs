@@ -1,6 +1,7 @@
-namespace Users.Infrastructure.Persistence.Repositories;
+namespace User.Application.Interfaces;
 
 public interface IUserRepository
 {
-    void Add(Domain.Models.User user);
+    Task<Users.Domain.Models.User?> GetByIdAsync(int userId); 
+    void Add(Users.Domain.Models.User user);
 }

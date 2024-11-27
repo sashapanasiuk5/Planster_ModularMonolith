@@ -8,6 +8,7 @@ public class InvitationDto
     public string Code { get; set; }
     public int ProjectId { get; set; }
     public string Role { get; set; }
+    public ProjectRole RoleId { get; set; }
     public int NumberOfPlaces { get; set; }
     public int NumberOfInvitedUsers { get; set; }
 }

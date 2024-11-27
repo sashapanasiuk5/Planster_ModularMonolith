@@ -3,13 +3,16 @@ using Identity.Contracts.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api;
+using Shared.Api.Respones;
+using User.Application.Commands.GetUserById;
 using User.Application.Commands.Register;
 using Users.Contracts.Dto;
 
 namespace Users.Infrastructure.Controllers;
 
 [Route("users")]
-public class UsersController: Controller
+public class UsersController: BaseController
 {
     private readonly IMediator _mediator;
 
@@ -23,20 +26,18 @@ public class UsersController: Controller
         var result = await _mediator.Send(new RegisterCommand(user));
         if (result.IsSuccess)
         {
-            var sessionId = result.Value.Id;
+            var sessionId = result.Value.Session.Id;
             Response.Cookies.Append("SessionID", sessionId);
-            return Ok(result.Value);
+            return Ok(new SuccessResponse(result.Value));
         }
 
         return BadRequest();
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = "SessionTokens")]
     [Route("{userId}")]
-    public async Task<IActionResult> GetUser(string userId)
+    public async Task<IActionResult> GetUserById([FromRoute] int userId)
     {
-        await Task.Delay(1000);
-        return Ok("Very secret endpoint");
+        return HandleResult(await _mediator.Send(new GetUserByIdCommand(userId)));
     }
 }

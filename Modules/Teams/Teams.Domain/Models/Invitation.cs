@@ -27,6 +27,12 @@ public class Invitation
         Project = project;
     }
 
+    public void Update(ProjectRole role, int numberOfPlaces)
+    {
+        Role = role;
+        NumberOfPlaces = numberOfPlaces;
+    }
+
     public Result<ProjectMember> Accept(Member invitedUser)
     {
         if (NumberOfPlaces > NumberOfInvitedUsers)

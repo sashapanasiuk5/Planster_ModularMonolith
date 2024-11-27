@@ -1,6 +1,6 @@
 using FluentResults;
 
-namespace Shared.Contracts.Errors;
+namespace Teams.Domain.Errors;
 
 public class InvitationNotFound: Error
 {

@@ -26,7 +26,7 @@ public class CreateInvitationCommandHandler: IRequestHandler<CreateInvitationCom
         {
             return Result.Fail(new ProjectNotFound(request.ProjectId));
         }
-        var invitation = new Invitation(project, request.Dto.Role, request.Dto.NumberOfPlaces, _randomStringGenerator);
+        var invitation = new Invitation(project, request.Dto.RoleId, request.Dto.NumberOfPlaces, _randomStringGenerator);
         project.AddInvitation(invitation);
         _unitOfWork.ProjectsRepository.AddInvitation(invitation);
         await _unitOfWork.SaveChangesAsync();

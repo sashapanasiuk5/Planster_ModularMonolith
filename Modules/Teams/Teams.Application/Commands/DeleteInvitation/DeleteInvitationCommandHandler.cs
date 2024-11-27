@@ -1,6 +1,5 @@
 using FluentResults;
 using MediatR;
-using Shared.Contracts.Errors;
 using Teams.Application.Interfaces;
 using Teams.Domain.Errors;
 

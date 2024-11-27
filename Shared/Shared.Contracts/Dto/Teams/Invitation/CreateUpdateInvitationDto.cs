@@ -2,8 +2,8 @@ using Teams.Domain.Enums;
 
 namespace Shared.Contracts.Dto.Teams.Invitation;
 
-public class CreateInvitationDto
+public class CreateUpdateInvitationDto
 {
-    public ProjectRole Role { get; set; }
+    public ProjectRole RoleId { get; set; }
     public int NumberOfPlaces { get; set; }
 }

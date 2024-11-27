@@ -1,6 +1,8 @@
 using System.Security.Principal;
 using FluentResults;
+using Infrastructure.EventBus;
 using MediatR;
+using Shared.Contracts.IntegrationEvents;
 using Shared.Contracts.ModulesInterfaces;
 using Teams.Application.Interfaces;
 using Teams.Application.Mappers;
@@ -12,11 +14,13 @@ public class DeleteMemberCommandHandler: IRequestHandler<DeleteMemberCommand, Re
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIdentityModule _identityModule;
+    private readonly IEventBus _bus;
 
-    public DeleteMemberCommandHandler(IUnitOfWork unitOfWork, IIdentityModule identityModule)
+    public DeleteMemberCommandHandler(IUnitOfWork unitOfWork, IIdentityModule identityModule, IEventBus bus)
     {
         _unitOfWork = unitOfWork;
         _identityModule = identityModule;
+        _bus = bus;
     }
     public async Task<Result<Unit>> Handle(DeleteMemberCommand request, CancellationToken cancellationToken)
     {
@@ -32,6 +36,7 @@ public class DeleteMemberCommandHandler: IRequestHandler<DeleteMemberCommand, Re
             await _identityModule.UpdatePermissionsAsync(member.Id,
                 member.ProjectMembers.Select(x => x.ToPermissionDto()).ToList());
             await _unitOfWork.SaveChangesAsync();
+            await _bus.PublishAsync(new TeamMemberDeleted(Guid.NewGuid(), member.Id, project.Id), cancellationToken);
             return Result.Ok();
         }
 

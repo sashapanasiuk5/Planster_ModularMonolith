@@ -1,3 +1,4 @@
+using User.Application.Interfaces;
 using Users.Infrastructure.Persistence.Repositories;
 
 namespace Users.Infrastructure.Persistence;

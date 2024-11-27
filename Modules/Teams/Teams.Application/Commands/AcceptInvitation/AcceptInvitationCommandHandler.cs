@@ -1,6 +1,7 @@
 using FluentResults;
+using Infrastructure.EventBus;
 using MediatR;
-using Shared.Contracts.Errors;
+using Shared.Contracts.IntegrationEvents;
 using Shared.Contracts.ModulesInterfaces;
 using Teams.Application.Interfaces;
 using Teams.Application.Mappers;
@@ -11,12 +12,14 @@ namespace Teams.Application.Commands.AcceptInvitation;
 public class AcceptInvitationCommandHandler: IRequestHandler<AcceptInvitationCommand, Result<Unit>>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEventBus _bus;
     private readonly IIdentityModule _identityModule;
 
-    public AcceptInvitationCommandHandler(IUnitOfWork unitOfWork, IIdentityModule identityModule)
+    public AcceptInvitationCommandHandler(IUnitOfWork unitOfWork, IIdentityModule identityModule, IEventBus bus)
     {
         _unitOfWork = unitOfWork;
         _identityModule = identityModule;
+        _bus = bus;
     }
     public async Task<Result<Unit>> Handle(AcceptInvitationCommand request, CancellationToken cancellationToken)
     {
@@ -38,6 +41,13 @@ public class AcceptInvitationCommandHandler: IRequestHandler<AcceptInvitationCom
             _unitOfWork.ProjectsRepository.AddNewProjectMember(newProjectMember);
             await _identityModule.UpdatePermissionsAsync(member.Id, member.ProjectMembers.Select(pm => pm.ToPermissionDto()).ToList());
             await _unitOfWork.SaveChangesAsync();
+            await _bus.PublishAsync(
+                new NewTeamMemberInvited(
+                    Guid.NewGuid(),
+                    member.Id,
+                    project.Id,
+                    member.FirstName + " " + member.LastName,
+                    member.Email));
             return Result.Ok();
         }
         return Result.Fail(result.Errors);

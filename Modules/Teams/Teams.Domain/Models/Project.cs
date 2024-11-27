@@ -1,5 +1,4 @@
 using FluentResults;
-using Shared.Contracts.Errors;
 using Teams.Domain.Enums;
 using Teams.Domain.Errors;
 

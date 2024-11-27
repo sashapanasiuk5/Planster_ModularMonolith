@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Modules\Teams\Teams.Domain\Teams.Domain.csproj" />
+      <ProjectReference Include="..\..\Modules\WorkOrganization\WorkOrganization.Domain\WorkOrganization.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
