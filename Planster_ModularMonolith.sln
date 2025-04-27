@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{34F662
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Infrastructure", "Shared\Shared.Infrastructure\Shared.Infrastructure.csproj", "{5F67F025-2B35-4D13-8B11-D7BDA81F963A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bootstraper", "Bootstraper\Bootstraper.csproj", "{BB3DD5C6-4BC2-41DC-BED4-D0B5F26252B3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users", "Users", "{F8E3543E-258F-4E75-93CA-42863CD4B687}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Domain", "Modules\Users\Users.Domain\Users.Domain.csproj", "{0B774238-92A1-4F72-9684-DBAFF11F94E6}"
@@ -87,10 +85,6 @@ Global
 		{5F67F025-2B35-4D13-8B11-D7BDA81F963A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F67F025-2B35-4D13-8B11-D7BDA81F963A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F67F025-2B35-4D13-8B11-D7BDA81F963A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB3DD5C6-4BC2-41DC-BED4-D0B5F26252B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB3DD5C6-4BC2-41DC-BED4-D0B5F26252B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB3DD5C6-4BC2-41DC-BED4-D0B5F26252B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB3DD5C6-4BC2-41DC-BED4-D0B5F26252B3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B774238-92A1-4F72-9684-DBAFF11F94E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B774238-92A1-4F72-9684-DBAFF11F94E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B774238-92A1-4F72-9684-DBAFF11F94E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
