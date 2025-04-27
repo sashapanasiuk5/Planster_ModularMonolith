@@ -1,17 +1,19 @@
-using Infrastructure;
-using Shared.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Teams.Infrastructure;
-using Users.Infrastructure;
-using WorkOrganization.Infrastructure;
 
-namespace Bootstraper;
+namespace Infrastructure;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
+    private readonly Action<IServiceCollection, IConfiguration> _configureAction; 
+    public Startup(IConfiguration configuration, Action<IServiceCollection, IConfiguration> configureAction)
     {
         Configuration = configuration;
+        _configureAction = configureAction;
     }
 
     public IConfiguration Configuration { get; }
@@ -19,10 +21,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSharedInfrastructure(Configuration);
-        services.AddIdentityModule(Configuration);
-        services.AddUsersModule(Configuration);
-        services.AddTeamsModule(Configuration);
-        services.AddWorkModule(Configuration);
+        _configureAction.Invoke(services, Configuration);
         services.AddEndpointsApiExplorer();
         services.AddLogging();
         services.AddCors(options =>
