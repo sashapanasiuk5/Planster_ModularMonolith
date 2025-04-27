@@ -14,7 +14,9 @@ public interface ITaskRepository
     Task<TaskStatus?> GetStatusByIdAsync(int id);
 
     Task<List<TaskStatus>> GetAllStatusesAsync();
+    Task<List<ProjectTask>> GetOnlyTasksInSprintAsync(int sprintId);
     Task<List<ProjectTask>> FindTasksByTileAsync(int projectId, string title);
+    Task<List<ProjectTask>> RecursiveFindTasks(int projectId, string search);
     
     void RemoveTask(ProjectTask projectTask);
     void AddTask(ProjectTask task);

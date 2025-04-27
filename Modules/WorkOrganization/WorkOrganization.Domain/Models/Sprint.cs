@@ -2,21 +2,21 @@ namespace WorkOrganization.Domain.Models;
 
 public class Sprint
 {
-    public int Id { get; private set; }
+    public int Id { get;  }
     public string Title { get; private set; }
-    public DateTime StartDate { get; private set; }
-    public DateTime EndDate { get; private set; }
+    public DateOnly StartDate { get; private set; }
+    public DateOnly EndDate { get; private set; }
     
     public Project Project { get; private set; }
-    public int ProjectId { get; private set; }
+    public int ProjectId { get;  }
     
-    private List<ProjectTask> _tasks = new List<ProjectTask>();
+    private readonly List<ProjectTask> _tasks = new List<ProjectTask>();
     public IReadOnlyCollection<ProjectTask> Tasks => _tasks.AsReadOnly();
     
     
     private Sprint() { }
 
-    public Sprint(string title, DateTime startDate, DateTime endDate, Project project)
+    public Sprint(string title, DateOnly startDate, DateOnly endDate, Project project)
     {
         Title = title;
         StartDate = startDate;
@@ -24,7 +24,7 @@ public class Sprint
         Project = project;
     }
 
-    public void Update(string title, DateTime startDate, DateTime endDate)
+    public void Update(string title, DateOnly startDate, DateOnly endDate)
     {
         Title = title;
         EndDate = endDate;

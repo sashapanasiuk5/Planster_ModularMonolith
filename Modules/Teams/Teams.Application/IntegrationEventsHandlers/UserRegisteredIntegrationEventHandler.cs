@@ -15,7 +15,7 @@ public class UserRegisteredIntegrationEventHandler: INotificationHandler<UserReg
     }
     public async Task Handle(UserRegistered notification, CancellationToken cancellationToken)
     {
-        var member = new Member(notification.UserId, notification.FirstName, notification.LastName, notification.Email, notification.ImageUrl);
+        var member = new Member(notification.UserId, notification.FirstName, notification.LastName, notification.Email);
         _unitOfWork.MembersRepository.AddMember(member);
         await _unitOfWork.SaveChangesAsync();
     }

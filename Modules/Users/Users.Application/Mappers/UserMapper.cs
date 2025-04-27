@@ -12,7 +12,18 @@ public static class UserMapper
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            ImageUrl = user.ImageUrl,
+            Location = user.Location,
+            Contacts = user.Contacts.Select(x => x.ToContactDto()).ToList(),
+        };
+    }
+
+
+    public static ContactDto ToContactDto(this Users.Domain.Models.Contact contact)
+    {
+        return new ContactDto()
+        {
+            Type = contact.Type,
+            Link = contact.Value
         };
     }
 }

@@ -9,5 +9,4 @@ public record UserRegistered(Guid EventId,
                              string FirstName,
                              string LastName,
                              string Email,
-                             string Password,
-                             string? ImageUrl) : IntegrationEvent(EventId);
+                             string Password) : IntegrationEvent(EventId);

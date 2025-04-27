@@ -48,6 +48,39 @@ namespace Users.Infrastructure.Persistence.Migrations
                     b.ToTable("Contact", "users");
                 });
 
+            modelBuilder.Entity("Users.Domain.Models.ProfilePhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MimeType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Resolution")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Photos", "users");
+                });
+
             modelBuilder.Entity("Users.Domain.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -62,9 +95,6 @@ namespace Users.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
@@ -87,9 +117,22 @@ namespace Users.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("Users.Domain.Models.ProfilePhoto", b =>
+                {
+                    b.HasOne("Users.Domain.Models.User", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Users.Domain.Models.User", b =>
                 {
                     b.Navigation("Contacts");
+
+                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

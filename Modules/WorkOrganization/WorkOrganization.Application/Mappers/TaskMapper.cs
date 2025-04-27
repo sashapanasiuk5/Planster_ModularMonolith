@@ -80,7 +80,11 @@ public static class TaskMapper
             Title = task.Title,
             Type = task.Type,
             Priority = task.Priority,
-            Status = task.Status.Name,
+            Status = new TaskStatusDto()
+            {
+                Id = task.Status.Id,
+                Name = task.Status.Name,
+            },
         };
 
         if (task.Assignee != null)
@@ -96,5 +100,41 @@ public static class TaskMapper
             dto.SubTasks = subTasks;
         }
         return dto;
+    }
+
+    public static TaskShortHierarchyDto ToShortHierarchyDto(this ProjectTask task)
+    {
+        TaskShortHierarchyDto dto = new TaskShortHierarchyDto()
+        {
+            Id = task.Id,
+            Code = task.Code,
+            Title = task.Title,
+            Type = task.Type
+        };
+        
+        if (task.SubTasks.Count > 0)
+        {
+            List<TaskShortHierarchyDto> subTasks = new List<TaskShortHierarchyDto>();
+            foreach (var subTask in task.SubTasks)
+            {
+                subTasks.Add(subTask.ToShortHierarchyDto());
+            }
+            dto.SubTasks = subTasks;
+        }
+        return dto;
+    }
+
+    public static BoardTaskDto ToBoardDto(this ProjectTask task)
+    {
+        return new BoardTaskDto()
+        {
+            Id = task.Id,
+            StatusId = task.Status.Id,
+            Code = task.Code,
+            AssigneeId = task.Assignee?.Id,
+            Priority = task.Priority,
+            Title = task.Title,
+            AssigneeName = task.Assignee?.Name
+        };
     }
 }

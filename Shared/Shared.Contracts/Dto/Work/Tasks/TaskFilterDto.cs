@@ -4,4 +4,5 @@ public class TaskFilterDto
 {
     public int? StatusId { get; set; }
     public int? SprintId { get; set; }
+    public int? AssigneeId { get; set; }
 }

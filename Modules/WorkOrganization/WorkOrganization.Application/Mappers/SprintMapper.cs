@@ -8,18 +8,18 @@ public static class SprintMapper
 {
     public static SprintShortDto ToShortDto(this Sprint sprint)
     {
-        return new SprintShortDto()
+        return new SprintShortDto
         {
             Id = sprint.Id,
             Title = sprint.Title,
             EndDate = sprint.EndDate,
-            StartDate = sprint.StartDate,
+            StartDate = sprint.StartDate
         };
     }
 
     public static SprintDto ToDto(this Sprint sprint, List<TaskHierarchyDto> tasks)
     {
-        return new SprintDto()
+        return new SprintDto
         {
             Id = sprint.Id,
             Title = sprint.Title,

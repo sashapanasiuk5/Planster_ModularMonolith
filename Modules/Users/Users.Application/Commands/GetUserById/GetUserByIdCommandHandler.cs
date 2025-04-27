@@ -1,8 +1,8 @@
 using FluentResults;
 using MediatR;
+using User.Application.Interfaces;
 using User.Application.Mappers;
 using Users.Contracts.Dto;
-using Users.Infrastructure.Persistence.Repositories;
 
 namespace User.Application.Commands.GetUserById;
 
@@ -16,7 +16,15 @@ public class GetUserByIdCommandHandler: IRequestHandler<GetUserByIdCommand, Resu
     }
     public async Task<Result<UserDto>> Handle(GetUserByIdCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
+        Users.Domain.Models.User? user;
+        if (request.IncludeContacts)
+        {
+            user = await _unitOfWork.UserRepository.GetByIdWithDetailsAsync(request.UserId);
+        }
+        else
+        {
+            user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
+        }
         if (user == null)
         {
             return Result.Fail($"User with id {request.UserId} not found");

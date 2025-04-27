@@ -6,17 +6,15 @@ public class Member
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string Email { get; private set; }
-    public string? ImageUrl { get; private set; }
-    private List<ProjectMember> _projectMembers = new List<ProjectMember>();
+    private readonly List<ProjectMember> _projectMembers = new List<ProjectMember>();
     public IReadOnlyCollection<ProjectMember> ProjectMembers => _projectMembers.AsReadOnly();
 
-    public Member(int id, string firstName, string lastName, string email, string? imageUrl)
+    public Member(int id, string firstName, string lastName, string email)
     {
         Id = id;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        ImageUrl = imageUrl;
     }
 
     public void LeaveProject(ProjectMember projectMember)

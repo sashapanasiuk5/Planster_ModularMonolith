@@ -19,6 +19,22 @@ public class UpdateSprintCommandHandler: IRequestHandler<UpdateSprintCommand, Re
         if (sprint == null)
             return Result.Fail(new SprintNotFound(request.SprintId));
         
+        foreach (var id in request.Sprint.TasksIdsToAdd)
+        {
+            var task = await _unitOfWork.TaskRepository.GetWithHierarchyByIdAsync(id);
+            if(task == null)
+                return Result.Fail("Task not found");
+            task.AddToSprint(sprint);
+        }
+        
+        foreach (var id in request.Sprint.TasksIdsToRemove)
+        {
+            var task = await _unitOfWork.TaskRepository.GetWithHierarchyByIdAsync(id);
+            if(task == null)
+                return Result.Fail("Task not found");
+            task.RemoveFromSprint();
+        }
+        
         sprint.Update(request.Sprint.Title, request.Sprint.StartDate, request.Sprint.EndDate);
         await _unitOfWork.SaveAsync();
         return Unit.Value;

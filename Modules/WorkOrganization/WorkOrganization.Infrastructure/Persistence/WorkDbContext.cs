@@ -13,15 +13,7 @@ public class WorkDbContext: DbContext
     public DbSet<TaskStatus> TaskStatuses { get; set; }
 
     public WorkDbContext(DbContextOptions<WorkDbContext> options) : base(options) { }
-
-    /*public WorkDbContext()
-    {
-        
-    }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5433;Database=Planster2DB; Username=postgres; Password=Sekvoya55");
-    }*/
+    
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,11 +45,13 @@ public class WorkDbContext: DbContext
         
         modelBuilder.Entity<ProjectTask>()
             .HasOne(x => x.Assignee)
-            .WithMany(x => x.Tasks);
+            .WithMany(x => x.Tasks)
+            .OnDelete(DeleteBehavior.SetNull);
         
         modelBuilder.Entity<ProjectTask>()
             .HasOne(x => x.Sprint)
-            .WithMany(x => x.Tasks);
+            .WithMany(x => x.Tasks)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Project>()
             .HasKey(x => x.Id);

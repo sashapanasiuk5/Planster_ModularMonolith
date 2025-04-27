@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using User.Application.Commands.Register;
+using User.Application.Interfaces;
+using User.Application.Services;
 using Users.Infrastructure.Persistence;
 using Users.Infrastructure.Persistence.Repositories;
 
@@ -14,6 +16,7 @@ public static class UsersModuleExtensions
     {
         services.AddDbContext<UsersDbContext>(opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IThumbnailService, ThumbnailService>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterCommand).GetTypeInfo().Assembly));
     }
 }

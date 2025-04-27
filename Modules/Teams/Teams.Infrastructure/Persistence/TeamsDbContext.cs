@@ -12,15 +12,7 @@ public class TeamsDbContext: DbContext
     {
     }
 
-    public TeamsDbContext()
-    {
-    }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(
-            "Host=127.0.0.1;Port=5433;Database=Planster2DB; Username=postgres; Password=Sekvoya55");
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

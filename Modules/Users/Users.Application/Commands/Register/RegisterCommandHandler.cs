@@ -4,9 +4,9 @@ using Infrastructure.EventBus;
 using MediatR;
 using Shared.Contracts.IntegrationEvents;
 using Shared.Contracts.ModulesInterfaces;
+using User.Application.Interfaces;
 using Users.Contracts.Dto;
 using Users.Domain.Models;
-using Users.Infrastructure.Persistence.Repositories;
 
 namespace User.Application.Commands.Register;
 using User = Users.Domain.Models.User;
@@ -24,7 +24,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
     }
     public async Task<Result<UserRegisteredDto>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-       var newUser = new User(request.dto.FirstName, request.dto.LastName, request.dto.Email, request.dto.ImageUrl, request.dto.Location);
+       var newUser = new User(request.dto.FirstName, request.dto.LastName, request.dto.Email, request.dto.Location);
 
        foreach (var contact in request.dto.Contacts)
        {
@@ -46,8 +46,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
             newUser.FirstName,
             newUser.LastName,
             newUser.Email,
-            request.dto.Password,
-            newUser.ImageUrl
+            request.dto.Password
         ));
         return Result.Ok(new UserRegisteredDto()
         {

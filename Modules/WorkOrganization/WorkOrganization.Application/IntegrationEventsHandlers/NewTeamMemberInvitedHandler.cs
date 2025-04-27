@@ -1,7 +1,6 @@
 using MediatR;
 using Shared.Contracts.IntegrationEvents;
 using WorkOrganization.Application.Interfaces;
-using WorkOrganization.Domain.Models;
 
 namespace WorkOrganization.Application.IntegrationEventsHandlers;
 

@@ -39,7 +39,7 @@ public class MembersController: BaseController
     }
 
     [HttpDelete]
-    [ProjectAuth(ProjectRole.Owner)]
+    [ProjectAuth(ProjectRole.Manager)]
     [Route("projects/{projectId}/members/{memberId}")]
     public async Task<IActionResult> DeleteMember([FromRoute] int projectId, [FromRoute] int memberId)
     {

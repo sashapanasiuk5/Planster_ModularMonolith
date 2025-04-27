@@ -5,7 +5,7 @@ namespace Domain.Models;
 
 public class Session
 {
-    public static readonly TimeSpan SessionDuration = TimeSpan.FromHours(1);
+    public static readonly TimeSpan SessionDuration = TimeSpan.FromHours(3);
     public string Id { get; private set; }
     public int IdentityId { get; private set; }
     public DateTime ExpirationDateTime { get; private set; }

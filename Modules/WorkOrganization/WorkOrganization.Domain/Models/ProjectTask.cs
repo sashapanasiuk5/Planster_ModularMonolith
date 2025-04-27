@@ -4,7 +4,7 @@ namespace WorkOrganization.Domain.Models;
 
 public class ProjectTask
 {
-    public int Id { get; private set; }
+    public int Id { get; }
     public string Code { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
@@ -16,13 +16,13 @@ public class ProjectTask
     public TaskType Type { get; private set; }
     public Project Project { get; private set; }
     
-    public int ProjectId { get; private set; }
+    public int ProjectId { get; }
     public Assignee? Assignee { get; private set; }
     public Sprint? Sprint { get; private set; }
     
     public ProjectTask? ParentTask { get; private set; }
     public int? ParentTaskId { get; private set; }
-    private List<ProjectTask> _subTasks = new List<ProjectTask>();
+    private readonly List<ProjectTask> _subTasks = new List<ProjectTask>();
     public IReadOnlyCollection<ProjectTask> SubTasks => _subTasks.AsReadOnly();
     
     private ProjectTask()
@@ -62,6 +62,7 @@ public class ProjectTask
     public void AddToSprint(Sprint sprint)
     {
         Sprint = sprint;
+        sprint.AddTask(this);
         foreach (var task in _subTasks)
         {
             task.AddToSprint(sprint);
@@ -125,7 +126,7 @@ public class ProjectTask
             return false;
         if (Type == TaskType.Story && parentTask.Type != TaskType.Epic)
             return false;
-        if (Type == TaskType.Task && parentTask.Type != TaskType.Story)
+        if (Type == TaskType.Task && parentTask.Type == TaskType.Task)
             return false;
         return true;
     }
@@ -136,7 +137,7 @@ public class ProjectTask
             return false;
         if(Type == TaskType.Story && subTask.Type != TaskType.Task)
             return false;
-        if(Type == TaskType.Epic && subTask.Type != TaskType.Story)
+        if(Type == TaskType.Epic && subTask.Type == TaskType.Epic)
             return false;
         return true;
     }

@@ -31,10 +31,10 @@ public class CreateSprintCommandHandler: IRequestHandler<CreateSprintCommand, Re
         
         foreach (var id in request.Sprint.TasksIdsToAdd)
         {
-            var task = await _unitOfWork.TaskRepository.GetByIdAsync(id);
+            var task = await _unitOfWork.TaskRepository.GetWithHierarchyByIdAsync(id);
             if(task == null)
                 return Result.Fail("Task not found");
-            sprint.AddTask(task);
+            task.AddToSprint(sprint);
         }
         _unitOfWork.SprintRepository.Add(sprint);
         await _unitOfWork.SaveAsync();

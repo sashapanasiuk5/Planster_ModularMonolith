@@ -1,6 +1,4 @@
-using User.Application.Interfaces;
-
-namespace Users.Infrastructure.Persistence.Repositories;
+namespace User.Application.Interfaces;
 
 public interface IUnitOfWork
 {

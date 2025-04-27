@@ -16,7 +16,7 @@ public class FindTaskByTitleCommandHandler: IRequestHandler<FindTaskByTitleComma
     }
     public async Task<Result<List<TaskShortDto>>> Handle(FindTaskByTitleCommand request, CancellationToken cancellationToken)
     {
-        var tasks = await _unitOfWork.TaskRepository.FindTasksByTileAsync(request.ProjectId, request.SearchWord);
-        return Result.Ok(tasks.Select(x => x.ToShortDto()).ToList());
+            var tasks = await _unitOfWork.TaskRepository.FindTasksByTileAsync(request.ProjectId, request.SearchWord);
+            return Result.Ok(tasks.Select(x => x.ToShortDto()).ToList());
     }
 }

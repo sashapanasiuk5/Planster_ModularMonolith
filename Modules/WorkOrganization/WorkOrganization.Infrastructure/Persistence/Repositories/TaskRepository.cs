@@ -17,11 +17,12 @@ public class TaskRepository: ITaskRepository
     }
     public async Task<ProjectTask?> GetWithHierarchyByIdAsync(int id)
     {
-        var tasks = await _context.Tasks.FromSqlRaw(RawQueries.RecursiveTaskById, id)
+        var query = _context.Tasks.FromSqlRaw(RawQueries.RecursiveTaskById, id)
             .Include(x => x.Status)
-            .Include(x => x.Assignee)
-            .ToListAsync();
-        return tasks.FirstOrDefault(x => x.Id == id);
+            .Include(x => x.Assignee);
+        var sql = query.ToQueryString();
+        var list = await query.ToListAsync();
+        return list.FirstOrDefault(x => x.Id == id);
     }
 
     public async Task<List<ProjectTask>> GetAllWithHierarchyAsync(int projectId, TaskFilterDto? filter = null)
@@ -30,6 +31,8 @@ public class TaskRepository: ITaskRepository
             .Include(x => x.Assignee)
             .Include(x => x.Sprint)
             .Include(x => x.Status);
+        
+        query = query.Where(x => x.ProjectId == projectId);
         
         if (filter != null)
         {
@@ -41,9 +44,14 @@ public class TaskRepository: ITaskRepository
             {
                 query = query.Where(x => x.Status!.Id == filter.StatusId);
             }
+            
+            if (filter.AssigneeId != null)
+            {
+                query = query.Where(x => x.Assignee!.Id == filter.AssigneeId);
+            }
         }
         var tasks = await query.ToListAsync();
-        return tasks.Where(x => x.ParentTaskId == null).ToList();
+        return tasks.ToList();
     }
     public async Task<ProjectTask?> GetByIdAsync(int id)
     {
@@ -71,11 +79,32 @@ public class TaskRepository: ITaskRepository
         return _context.TaskStatuses.ToListAsync();
     }
 
+    public Task<List<ProjectTask>> GetOnlyTasksInSprintAsync(int sprintId)
+    {
+        return _context.Tasks
+            .Include(x => x.Assignee)
+            .Include(x => x.Sprint)
+            .Include(x => x.Status)
+            .Where(x => x.Sprint!.Id == sprintId && x.Type == TaskType.Task)
+            .ToListAsync();
+
+    }
+
     public Task<List<ProjectTask>> FindTasksByTileAsync(int projectId, string title)
     {
         return _context.Tasks
             .Where(x => x.ProjectId == projectId)
-            .Where(x => x.Title.ToLower().Contains(title.ToLower()))
+            .Where(x => x.Title.ToLower().Contains(title.ToLower()) || x.Code.ToLower().Contains(title.ToLower()))
+            .ToListAsync();
+    }
+
+    public Task<List<ProjectTask>> RecursiveFindTasks(int projectId, string search)
+    {
+        return _context.Tasks
+            .Include(x => x.SubTasks)
+            .ThenInclude(x => x.SubTasks)
+            .Where(x => x.ProjectId == projectId)
+            .Where(x => x.Title.ToLower().Contains(search.ToLower()) || x.Code.ToLower().Contains(search.ToLower()))
             .ToListAsync();
     }
 

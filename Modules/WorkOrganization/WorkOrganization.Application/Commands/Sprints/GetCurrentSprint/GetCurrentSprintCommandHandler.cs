@@ -4,6 +4,7 @@ using Shared.Contracts.Dto.Work.Sprints;
 using Shared.Contracts.Dto.Work.Tasks;
 using WorkOrganization.Application.Interfaces;
 using WorkOrganization.Application.Mappers;
+using WorkOrganization.Domain.Models;
 
 namespace WorkOrganization.Application.Commands.Sprints.GetCurrentSprint;
 
@@ -22,9 +23,11 @@ public class GetCurrentSprintCommandHandler: IRequestHandler<GetCurrentSprintCom
             return Result.Ok<SprintDto?>(null);
 
         var tasks = await _unitOfWork.TaskRepository.GetAllWithHierarchyAsync(request.ProjectId,
-            new TaskFilterDto() { SprintId = sprint.Id });
+            new TaskFilterDto { SprintId = sprint.Id });
         
-        var tasksDtos = tasks.Select(x => x.ToHierarchyDto()).ToList();
+        var withoutDublicates = tasks.Where(task => tasks.All(x => x.Id != task.ParentTaskId)).ToList();
+
+        var tasksDtos = withoutDublicates.Select(x => x.ToHierarchyDto()).ToList();
         var dto = sprint.ToDto(tasksDtos);
         return Result.Ok<SprintDto?>(dto);
     }

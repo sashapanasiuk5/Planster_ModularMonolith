@@ -149,14 +149,14 @@ namespace WorkOrganization.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -205,7 +205,8 @@ namespace WorkOrganization.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("WorkOrganization.Domain.Models.Assignee", "Assignee")
                         .WithMany("Tasks")
-                        .HasForeignKey("AssigneeId");
+                        .HasForeignKey("AssigneeId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("WorkOrganization.Domain.Models.ProjectTask", "ParentTask")
                         .WithMany("SubTasks")
@@ -220,7 +221,8 @@ namespace WorkOrganization.Infrastructure.Persistence.Migrations
 
                     b.HasOne("WorkOrganization.Domain.Models.Sprint", "Sprint")
                         .WithMany("Tasks")
-                        .HasForeignKey("SprintId");
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("WorkOrganization.Domain.Models.TaskStatus", "Status")
                         .WithMany()

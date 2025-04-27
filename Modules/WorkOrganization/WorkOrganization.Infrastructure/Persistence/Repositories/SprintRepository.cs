@@ -22,10 +22,11 @@ public class SprintRepository: ISprintRepository
 
     public Task<Sprint?> GetCurrentSprintAsync(int projectId)
     {
-        return _context.Sprints
+        var query =  _context.Sprints
             .Where(s => s.ProjectId == projectId)
-            .Where(x => x.EndDate >= DateTime.UtcNow && x.StartDate <= DateTime.UtcNow)
-            .FirstOrDefaultAsync();
+            .Where(x => x.EndDate >= DateOnly.FromDateTime(DateTime.Now));
+        
+        return query.FirstOrDefaultAsync();
     }
 
     public async Task<Sprint?> GetByIdAsync(int id)

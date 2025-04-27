@@ -35,9 +35,9 @@ public class Project
         var exsistingMember = _members.Find(m => m.MemberId == newOwner.Id);
         if (exsistingMember != null)
         {
-            if (exsistingMember.Role != ProjectRole.Owner)
+            if (exsistingMember.Role != ProjectRole.Manager)
             {
-                exsistingMember.ChangeRole(ProjectRole.Owner);
+                exsistingMember.ChangeRole(ProjectRole.Manager);
             }
             else
             {
@@ -46,8 +46,11 @@ public class Project
         }
         else
         {
-            _members.Add(new ProjectMember(Id, newOwner.Id, ProjectRole.Owner));
-        }
+            var projectMember = new ProjectMember(Id, newOwner.Id, ProjectRole.Manager);
+            _members.Add(projectMember);
+            newOwner.JoinProject(projectMember);
+        }           
+
         return Result.Ok();
     }
 
