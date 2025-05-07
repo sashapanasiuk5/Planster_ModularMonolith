@@ -21,6 +21,7 @@ public static class IdentityModuleExtensions
         services.AddScoped<ISessionStore, SessionStore>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IEncryptor, Encryptor>();
+        services.AddScoped<ITokenProvider, TokenProvider>();
         services.Configure<EncryptionOptions>(opts =>
         {
             opts.Key = configuration.GetSection("Encryption")!.GetValue<string>("Key");
