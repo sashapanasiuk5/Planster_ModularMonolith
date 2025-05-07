@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="FluentResults" Version="3.16.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Modules\Teams\Teams.Domain\Teams.Domain.csproj" />
+      <ProjectReference Include="..\Shared.Contracts\Shared.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
