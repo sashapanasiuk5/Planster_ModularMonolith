@@ -91,29 +91,4 @@ public class UsersController: BaseController
         }
         return NotFound(new ErrorResponse(fileResult.Errors.Select(x =>x.Message).ToList()));
     }
-
-    [HttpGet]
-    [Authorize(AuthenticationSchemes = "SimpleAuth")]
-    [Route("testsimple")]
-    public Task<IActionResult> TestSimple()
-    {
-        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Simple authorization succesfull")));
-    }
-    
-    [HttpGet]
-    [Authorize]
-    [Route("testproject")]
-    public Task<IActionResult> TestProject()
-    {
-        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Project authorization succesfull")));
-    }
-    
-    [HttpGet]
-    [Route("{projectId}/testroles")]
-    [Authorize]
-    [ProjectAuth(ProjectRole.Customer)]
-    public Task<IActionResult> TestProjectWithRoles()
-    {
-        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Project authorization and authorization succesfull")));
-    }
 }
