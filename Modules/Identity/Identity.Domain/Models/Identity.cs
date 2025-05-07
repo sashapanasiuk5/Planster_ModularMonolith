@@ -4,8 +4,9 @@ public class Identity
 {
     public int Id { get; private set; }
     public Credentials Credentials { get; private set; }
-
-
+    
+    public RefreshToken RefreshToken { get; set; }
+    
     private Identity() { }
     public Identity(Credentials credentials, int id = 0)
     {

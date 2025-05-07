@@ -5,4 +5,4 @@ using MediatR;
 
 namespace Application.Commands;
 
-public record LoginCommand(LoginDto Dto) : IRequest<Result<SessionDto>>;
+public record LoginCommand(LoginDto Dto) : IRequest<Result<LoginResultDto>>;
