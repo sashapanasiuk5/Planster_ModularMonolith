@@ -7,6 +7,5 @@ namespace Shared.Contracts.ModulesInterfaces;
 public interface IIdentityModule
 {
     Task<SessionDto> AddNewIdentityAsync(NewUserDto user, int userId);
-    Task<SessionDto?> GetSessionAsync(string sessionId);
     Task UpdatePermissionsAsync(int userId, List<MemberPermissionDto> permissions);
 }
