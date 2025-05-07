@@ -5,8 +5,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api;
+using Shared.Api.Attributes;
 using Shared.Api.Extensions;
 using Shared.Api.Respones;
+using Teams.Domain.Enums;
 using User.Application.Commands.GetUserById;
 using User.Application.Commands.GetUserPhoto;
 using User.Application.Commands.Register;
@@ -88,5 +90,30 @@ public class UsersController: BaseController
             return File(fileResult.Value.Data, fileResult.Value.MimeType, fileResult.Value.FileName);
         }
         return NotFound(new ErrorResponse(fileResult.Errors.Select(x =>x.Message).ToList()));
+    }
+
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = "SimpleAuth")]
+    [Route("testsimple")]
+    public Task<IActionResult> TestSimple()
+    {
+        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Simple authorization succesfull")));
+    }
+    
+    [HttpGet]
+    [Authorize]
+    [Route("testproject")]
+    public Task<IActionResult> TestProject()
+    {
+        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Project authorization succesfull")));
+    }
+    
+    [HttpGet]
+    [Route("{projectId}/testroles")]
+    [Authorize]
+    [ProjectAuth(ProjectRole.Customer)]
+    public Task<IActionResult> TestProjectWithRoles()
+    {
+        return Task.FromResult<IActionResult>(Ok(new SuccessResponse("Project authorization and authorization succesfull")));
     }
 }

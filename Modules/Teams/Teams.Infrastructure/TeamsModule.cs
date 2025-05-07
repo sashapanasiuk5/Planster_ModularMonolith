@@ -5,7 +5,7 @@ using Teams.Application.Commands.GetMemberRoles;
 
 namespace Teams.Infrastructure;
 
-public class TeamsModule: ITeamsModule
+public class TeamsModule//: ITeamsModule
 {
     private readonly IMediator _mediator;
 
