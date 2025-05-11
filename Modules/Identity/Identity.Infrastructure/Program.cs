@@ -1,4 +1,5 @@
 using Infrastructure;
+using Infrastructure.Configuration;
 using Infrastructure.Utils;
 using Microsoft.AspNetCore;
 
@@ -11,6 +12,10 @@ public class Program {
     }  
     public static IWebHost BuildWebHost(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddGoogleSecretsManager(hostingContext.HostingEnvironment);
+            })
             .UseStartup(StartupFactory)
             .Build(); 
 }  

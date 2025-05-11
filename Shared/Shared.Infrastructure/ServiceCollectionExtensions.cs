@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration config)
     {
-        services.AddScoped<ITeamsModule, TeamsModuleApi>();
         services.AddAuthentication("ProjectAuth")
             .AddScheme<AuthenticationSchemeOptions, SimpleAuthSchemeHandler>("SimpleAuth", opt => { })
             .AddScheme<AuthenticationSchemeOptions, ProjectAuthSchemeHandler>("ProjectAuth",opt => { });
@@ -24,6 +23,7 @@ public static class ServiceCollectionExtensions
             });
         services.AddSingleton<InMemoryMessageQueue>();
         services.AddSingleton<IEventBus, EventBus.EventBus>();
+        services.AddScoped<ITeamsModule, TeamsModuleApi>();
         services.AddHostedService<IntegrationEventProcessorJob>();
         return services;
     }

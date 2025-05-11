@@ -17,7 +17,7 @@ namespace Infrastructure.Controllers;
 [Route("identity")]
 public class IdentityController: BaseController
 {
-    private readonly IMediator _mediator;  
+    private readonly IMediator _mediator;
     public IdentityController(IMediator mediator)
     {
         _mediator = mediator;
