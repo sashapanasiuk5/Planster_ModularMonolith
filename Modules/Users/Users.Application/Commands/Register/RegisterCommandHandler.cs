@@ -39,7 +39,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
        
        _unitOfWork.UserRepository.Add(newUser);
         await _unitOfWork.SaveChangesAsync();
-        var session = await _identityModule.AddNewIdentityAsync(request.dto, newUser.Id);
+        var tokens = await _identityModule.AddNewIdentityAsync(request.dto, newUser.Id);
         await _bus.PublishAsync(new UserRegistered(
             Guid.NewGuid(),
             newUser.Id,
@@ -54,7 +54,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
             FirstName = newUser.FirstName,
             LastName = newUser.LastName,
             Email = newUser.Email,
-            Session = session
+            Tokens = tokens
         });
     }
 }

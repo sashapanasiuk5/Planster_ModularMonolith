@@ -5,8 +5,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api;
+using Shared.Api.Attributes;
 using Shared.Api.Extensions;
 using Shared.Api.Respones;
+using Teams.Domain.Enums;
 using User.Application.Commands.GetUserById;
 using User.Application.Commands.GetUserPhoto;
 using User.Application.Commands.Register;
@@ -31,8 +33,6 @@ public class UsersController: BaseController
         var result = await _mediator.Send(new RegisterCommand(user));
         if (result.IsSuccess)
         {
-            var sessionId = result.Value.Session.Id;
-            Response.Cookies.Append("SessionID", sessionId);
             return Ok(new SuccessResponse(result.Value));
         }
 

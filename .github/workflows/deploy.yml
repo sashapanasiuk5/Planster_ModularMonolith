@@ -1,0 +1,57 @@
+name: Deploy to GCP on PR to master
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}' 
+
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+
+    - name: Create GCE VM
+      run: |
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        MACHINE_TYPE="${{ secrets.GCP_MACHINE_TYPE }}"
+        PROJECT="${{ secrets.GCP_PROJECT }}"
+
+        echo "Creating VM $VM_NAME in $ZONE..."
+
+        gcloud compute instances create "$VM_NAME" \
+          --zone="$ZONE" \
+          --machine-type="$MACHINE_TYPE" \
+          --project="$PROJECT" \
+          --image-family=debian-11 \
+          --image-project=debian-cloud \
+          --boot-disk-size=20GB \
+          --metadata=startup-script='#!/bin/bash
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            docker build -t planster-app .
+            docker run -d -e ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION }} -p 8080:80 planster-app
+
+    - name: Schedule VM Deletion in 1 Hour
+      run: |
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        PROJECT="${{ secrets.GCP_PROJECT }}"
+
+        echo "Scheduling deletion of $VM_NAME in 1 hour..."
+
+        echo "gcloud compute instances delete $VM_NAME --zone=$ZONE --project=$PROJECT --quiet" | at now + 60 minutes
