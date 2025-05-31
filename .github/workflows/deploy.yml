@@ -44,7 +44,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y docker.io
             docker build -t planster-app .
-            docker run -d -e ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION }} -p 8080:80 planster-app
+            docker run -d -e ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION }} -p 8080:80 planster-app'
 
     - name: Schedule VM Deletion in 1 Hour
       run: |
