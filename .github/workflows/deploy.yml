@@ -56,7 +56,7 @@ jobs:
             sudo apt-get install -y docker.io
             docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' -p '${{ secrets.DOCKERHUB_TOKEN }}'
             docker pull $IMAGE_NAME
-            docker run -d -e ConnectionStrings__DefaultConnection="$DB_CONNECTION" -p 80:80 planster-app"
+            docker run -d -e ConnectionStrings__DefaultConnection="$DB_CONNECTION" -p 80:80 $IMAGE_NAME"
 
     - name: Install 'at' command
       run: sudo apt-get update && sudo apt-get install -y at
