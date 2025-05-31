@@ -33,8 +33,6 @@ public class UsersController: BaseController
         var result = await _mediator.Send(new RegisterCommand(user));
         if (result.IsSuccess)
         {
-            var sessionId = result.Value.Session.Id;
-            Response.Cookies.Append("SessionID", sessionId);
             return Ok(new SuccessResponse(result.Value));
         }
 

@@ -9,7 +9,7 @@ public interface ITokenProvider
 {
     string CreateUserToken(int identityId);
     
-    string CreateProjectToken(MemberPermissionDto permissions);
+    string CreateProjectToken(MemberPermissionDto? permissions);
     
     Task<string> CreateRefreshToken(string userToken, string? projectToken, int identityId);
 

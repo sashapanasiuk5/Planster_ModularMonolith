@@ -5,7 +5,7 @@ namespace Shared.Contracts.ModulesInterfaces;
 
 public interface ITeamsModule
 {
-    Task<List<MemberPermissionDto>> GetMemberPermissionsAsync(int memberId);
+    Task<List<MemberPermissionDto?>> GetMemberPermissionsAsync(int memberId);
     
-    Task<MemberPermissionDto> GetMemberPermissionsByProjectAsync(int memberId, int projectId);
+    Task<MemberPermissionDto?> GetMemberPermissionsByProjectAsync(int memberId, int projectId);
 }

@@ -2,6 +2,7 @@ using Application.Interfaces;
 using FluentResults;
 using Identity.Contracts.Dtos;
 using MediatR;
+using Shared.Contracts.Dto.Teams.Member;
 using Shared.Contracts.ModulesInterfaces;
 
 namespace Application.Commands.RefreshToken;

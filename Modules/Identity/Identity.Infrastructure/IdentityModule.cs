@@ -16,7 +16,7 @@ public class IdentityModule: IIdentityModule
     {
         _mediator = mediator;
     }
-    public async Task<SessionDto> AddNewIdentityAsync(NewUserDto user, int userId)
+    public async Task<LoginResultDto> AddNewIdentityAsync(NewUserDto user, int userId)
     {
         var result = await _mediator.Send(new AddIdentityCommand(userId, user));
         return result.Value;

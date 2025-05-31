@@ -6,9 +6,9 @@ namespace Infrastructure.ModulesApi;
 
 public class TeamsModuleApi: ITeamsModule
 {
-    public Task<List<MemberPermissionDto>> GetMemberPermissionsAsync(int memberId)
+    public Task<List<MemberPermissionDto?>> GetMemberPermissionsAsync(int memberId)
     {
-        return Task.FromResult(new List<MemberPermissionDto>()
+        return Task.FromResult(new List<MemberPermissionDto?>()
         {
             new ()
             {
@@ -18,7 +18,7 @@ public class TeamsModuleApi: ITeamsModule
         });
     }
 
-    public Task<MemberPermissionDto> GetMemberPermissionsByProjectAsync(int memberId, int projectId)
+    public Task<MemberPermissionDto?> GetMemberPermissionsByProjectAsync(int memberId, int projectId)
     {
         return Task.FromResult(new MemberPermissionDto()
         {

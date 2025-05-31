@@ -46,7 +46,7 @@ public class TokenProvider: ITokenProvider
         return handler.CreateToken(tokenDescriptor);
     }
 
-    public string CreateProjectToken(MemberPermissionDto permissions)
+    public string CreateProjectToken(MemberPermissionDto? permissions)
     {
         string secretKey = _configuration["Encryption:Key"];
         var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
