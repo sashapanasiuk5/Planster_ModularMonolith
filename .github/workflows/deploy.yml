@@ -35,6 +35,8 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT }}
 
     - name: Create GCE VM
+      env:
+        DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
       run: |
         VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
         ZONE="${{ secrets.GCP_ZONE }}"
