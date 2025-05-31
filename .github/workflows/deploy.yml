@@ -13,6 +13,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Build and push Docker image
+      run: |
+        IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/planster-app:${{ github.sha }}
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
 
     - name: Authenticate to GCP
       uses: google-github-actions/auth@v2
@@ -40,11 +49,15 @@ jobs:
           --image-family=debian-11 \
           --image-project=debian-cloud \
           --boot-disk-size=20GB \
-          --metadata=startup-script='#!/bin/bash
+          --metadata=startup-script="#!/bin/bash
             sudo apt-get update
             sudo apt-get install -y docker.io
-            docker build -t planster-app .
-            docker run -d -e ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION }} -p 8080:80 planster-app'
+            docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' -p '${{ secrets.DOCKERHUB_TOKEN }}'
+            docker pull $IMAGE_NAME
+            docker run -d -e ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION }} -p 80:80 planster-app"
+
+    - name: Install 'at' command
+      run: sudo apt-get update && sudo apt-get install -y at
 
     - name: Schedule VM Deletion in 1 Hour
       run: |
