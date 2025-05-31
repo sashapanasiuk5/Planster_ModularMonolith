@@ -1,0 +1,84 @@
+{
+  "Routes": [
+    {
+      "ServiceName": "Identity",
+      "UpstreamHttpMethod": [
+        "Get", "Post", "Patch", "Delete"
+      ],
+      "UpstreamPathTemplate": "/api/identity/{everything}",
+      "DownstreamPathTemplate": "/identity/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "Users",
+      "UpstreamHttpMethod": [
+        "Get", "Post", "Patch", "Delete"
+      ],
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "DownstreamPathTemplate": "/users/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "Teams",
+      "UpstreamHttpMethod": [
+        "Get", "Post", "Patch", "Delete"
+      ],
+      "UpstreamPathTemplate": "/api/projects/{everything}",
+      "DownstreamPathTemplate": "/projects/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "Teams",
+      "UpstreamHttpMethod": [
+        "Get", "Post", "Patch", "Delete"
+      ],
+      "UpstreamPathTemplate": "/api/members/{everything}",
+      "DownstreamPathTemplate": "/members/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "WorkOrganization",
+      "UpstreamHttpMethod": [
+        "Get", "Post", "Patch", "Delete"
+      ],
+      "UpstreamPathTemplate": "/api/projects/{projectId}/sprints/{everything}",
+      "DownstreamPathTemplate": "/projects/{projectId}/sprints/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "WorkOrganization",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "UpstreamPathTemplate": "/api/statuses",
+      "DownstreamPathTemplate": "/statuses",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "WorkOrganization",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "UpstreamPathTemplate": "/api/projects/{projectId}/tasks/{everything}",
+      "DownstreamPathTemplate": "/projects/{projectId}/tasks/{everything}",
+      "DownstreamScheme": "https"
+    },
+    {
+      "ServiceName": "Frontend",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "UpstreamPathTemplate": "/{catchAll}",
+      "DownstreamPathTemplate": "/{catchAll}",
+      "DownstreamScheme": "https"
+    }
+  ], 
+  "GlobalConfiguration":{
+    "BaseUrl": "https://localhost:7170",
+    "ServiceDiscoveryProvider": {
+      "Type": "ServiceDiscoveryProvider"
+    }
+  },
+  "DynamicRoutes": [],
+  "Aggregates": []
+}
