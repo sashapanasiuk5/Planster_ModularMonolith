@@ -22,7 +22,7 @@ public class IdentityController: BaseController
     {
         _mediator = mediator;
     }
-    [Route("session")]
+    [Route("login")]
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
@@ -35,7 +35,7 @@ public class IdentityController: BaseController
     }
 
     [HttpDelete]
-    [Route("session")]
+    [Route("logout")]
     [Authorize]
     public async Task<IActionResult> Logout()
     {
