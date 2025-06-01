@@ -73,8 +73,8 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-    - name: Wait for 5 minutes
-      run: sleep 100
+    - name: Wait for 1 hour
+      run: sleep 3600
 
     - name: Authenticate to GCP
       uses: google-github-actions/auth@v2
