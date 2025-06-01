@@ -59,16 +59,36 @@ jobs:
             docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' -p '${{ secrets.DOCKERHUB_TOKEN }}'
             docker pull $IMAGE_NAME
             docker run -d -e ConnectionStrings__DefaultConnection='${DB_CONNECTION}' -p 80:80 $IMAGE_NAME"
-
-    - name: Install 'at' command
-      run: sudo apt-get update && sudo apt-get install -y at
-
-    - name: Schedule VM Deletion in 1 Hour
+    
+    - name: Get external IP and print URL
+      id: vm-ip
       run: |
         VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
         ZONE="${{ secrets.GCP_ZONE }}"
-        PROJECT="${{ secrets.GCP_PROJECT }}"
+        IP=$(gcloud compute instances describe "$VM_NAME" --zone="$ZONE" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+        echo "Swagger UI will be available at: http://$IP/swagger/index.html"
 
-        echo "Scheduling deletion of $VM_NAME in 1 hour..."
 
-        echo "gcloud compute instances delete $VM_NAME --zone=$ZONE --project=$PROJECT --quiet" | at now + 60 minutes
+  delete-vm:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Wait for 5 minutes
+      run: sleep 300
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}' 
+
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+
+    - name: Delete the GCE VM
+      run: |
+        VM_NAME="${{ needs.deploy.outputs.vm-name }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        echo "Deleting VM $VM_NAME in $ZONE..."
+        gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet
