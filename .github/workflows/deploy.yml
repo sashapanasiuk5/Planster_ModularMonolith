@@ -34,10 +34,6 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT }}
 
-    - name: Set VM name
-      id: set-vm-name
-      run: echo "vm-name=${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}" >> $GITHUB_OUTPUT
-
     - name: Create GCE VM
       env:
         DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
@@ -92,7 +88,7 @@ jobs:
 
     - name: Delete the GCE VM
       run: |
-        VM_NAME="${{ needs.deploy.outputs.vm-name }}"
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
         ZONE="${{ secrets.GCP_ZONE }}"
         echo "Deleting VM $VM_NAME in $ZONE..."
         gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet
