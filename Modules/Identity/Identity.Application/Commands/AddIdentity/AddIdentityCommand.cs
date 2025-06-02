@@ -5,4 +5,4 @@ using Users.Contracts.Dto;
 
 namespace Application.Commands.AddIdentity;
 
-public record AddIdentityCommand(int UserId, NewUserDto dto) : IRequest<Result<SessionDto>>;
+public record AddIdentityCommand(int UserId, NewUserDto dto) : IRequest<Result<LoginResultDto>>;

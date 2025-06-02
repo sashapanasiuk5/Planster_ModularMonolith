@@ -1,0 +1,94 @@
+name: Deploy to GCP on PR to master
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Build and push Docker image
+      run: |
+        IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/planster-app:${{ github.sha }}
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}' 
+
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+
+    - name: Create GCE VM
+      env:
+        DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
+      run: |
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        MACHINE_TYPE="${{ secrets.GCP_MACHINE_TYPE }}"
+        PROJECT="${{ secrets.GCP_PROJECT }}"
+
+        echo "Creating VM $VM_NAME in $ZONE..."
+        echo "$IMAGE_NAME"
+
+        gcloud compute instances create "$VM_NAME" \
+          --zone="$ZONE" \
+          --machine-type="$MACHINE_TYPE" \
+          --project="$PROJECT" \
+          --image-family=debian-11 \
+          --image-project=debian-cloud \
+          --boot-disk-size=50GB \
+          --metadata=startup-script="#!/bin/bash
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' -p '${{ secrets.DOCKERHUB_TOKEN }}'
+            docker pull $IMAGE_NAME
+            docker run -d -e ConnectionStrings__DefaultConnection='${DB_CONNECTION}' -p 80:80 $IMAGE_NAME"
+    
+    - name: Get external IP and print URL
+      id: vm-ip
+      run: |
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        IP=$(gcloud compute instances describe "$VM_NAME" --zone="$ZONE" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+        echo "Swagger UI will be available at: http://$IP/swagger/index.html"
+
+
+  delete-vm:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Wait for 1 hour
+      run: sleep 3600
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}' 
+
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+
+    - name: Delete the GCE VM
+      run: |
+        VM_NAME="${{ secrets.GCP_VM_NAME }}-${{ github.run_id }}"
+        ZONE="${{ secrets.GCP_ZONE }}"
+        echo "Deleting VM $VM_NAME in $ZONE..."
+        gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet

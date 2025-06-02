@@ -4,27 +4,28 @@ using Domain.Models;
 using FluentResults;
 using Identity.Contracts.Dtos;
 using MediatR;
+using Microsoft.Extensions.Configuration;
+using Shared.Contracts.Dto.Teams.Member;
 using Shared.Contracts.ModulesInterfaces;
+using Teams.Domain.Enums;
 
 namespace Application.Commands.Login;
 
-public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<SessionDto>>
+public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<LoginResultDto>>
 {
-    private readonly ISessionStore _sessionStore;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITeamsModule _teamsModule;
-    private readonly IEncryptor _encryptor;
+    private readonly ITokenProvider _tokenProvider;
     private readonly IIdentityRepository _identityRepository;
-
-    public LoginCommandHandler(ISessionStore sessionStore, IPasswordHasher passwordHasher, IIdentityRepository identityRepository, ITeamsModule teamsModule, IEncryptor encryptor)
+    
+    public LoginCommandHandler(IPasswordHasher passwordHasher, IIdentityRepository identityRepository, ITokenProvider tokenProvider, ITeamsModule teamsModule)
     {
-        _sessionStore = sessionStore;
         _passwordHasher = passwordHasher;
         _identityRepository = identityRepository;
         _teamsModule = teamsModule;
-        _encryptor = encryptor;
+        _tokenProvider = tokenProvider;
     }
-    public async Task<Result<SessionDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<Result<LoginResultDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var identity = await _identityRepository.GetByEmailAsync(request.Dto.Email);
         if (identity != null)
@@ -32,10 +33,18 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<SessionDt
             var isPasswordCorrect = _passwordHasher.Verify(request.Dto.Password, identity.Credentials.Password);
             if (isPasswordCorrect)
             {
+                var userToken = _tokenProvider.CreateUserToken(identity.Id);
+                string? projectToken = null;
+                
                 var permissions = await _teamsModule.GetMemberPermissionsAsync(identity.Id);
-                var session = Session.Create(identity.Id, permissions, _encryptor);
-                await _sessionStore.StartSessionAsync(session);
-                return Result.Ok(session.ToDto());     
+                if (permissions.Count > 0)
+                {
+                    var permission = permissions[0];
+                    projectToken = _tokenProvider.CreateProjectToken(permission);
+                }
+
+                var refreshToken = await _tokenProvider.CreateRefreshToken(userToken, projectToken, identity.Id);
+                return Result.Ok(new LoginResultDto(userToken, projectToken, refreshToken));
             }
             return Result.Fail("Invalid credentials");
         }

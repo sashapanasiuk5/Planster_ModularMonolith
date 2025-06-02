@@ -5,40 +5,46 @@ using FluentResults;
 using Identity.Contracts.Dtos;
 using MediatR;
 using Shared.Contracts.Dto.Teams.Member;
+using Shared.Contracts.ModulesInterfaces;
 
 namespace Application.Commands.AddIdentity;
 
-public class AddIdentityCommandHandler: IRequestHandler<AddIdentityCommand, Result<SessionDto>>
+public class AddIdentityCommandHandler: IRequestHandler<AddIdentityCommand, Result<LoginResultDto>>
 {
     private readonly IIdentityRepository _identityRepository;
-    private readonly IEncryptor _encryptor;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly ISessionStore _sessionStore;
+    private readonly ITokenProvider _tokenProvider;
+    private readonly ITeamsModule _teamsModule;
     
-    public AddIdentityCommandHandler(IIdentityRepository identityRepository, IPasswordHasher hasher, ISessionStore sessionStore, IEncryptor encryptor)
+    public AddIdentityCommandHandler(IIdentityRepository identityRepository, IPasswordHasher hasher, ITokenProvider tokenProvider, ITeamsModule teamsModule)
     {
         _identityRepository = identityRepository;
         _passwordHasher = hasher;
-        _sessionStore = sessionStore;
-        _encryptor = encryptor;
+        _tokenProvider = tokenProvider;
+        _teamsModule = teamsModule;
     }
     
-    public async Task<Result<SessionDto>> Handle(AddIdentityCommand request, CancellationToken cancellationToken)
+    public async Task<Result<LoginResultDto>> Handle(AddIdentityCommand request, CancellationToken cancellationToken)
     {
         var hashedPassword = _passwordHasher.Hash(request.dto.Password);
         var creds = new Credentials(request.dto.Email, hashedPassword);
-        var session = Session.Create(request.UserId, new List<MemberPermissionDto>(), _encryptor);
-        await _sessionStore.StartSessionAsync(session);
-        
         var identity = new Domain.Models.Identity(creds, request.UserId);
-        _identityRepository.Add(identity);
-        await _identityRepository.SaveChangesAsync();
         
-        return Result.Ok(new SessionDto()
+        var userToken = _tokenProvider.CreateUserToken(identity.Id);
+        string? projectToken = null;
+                
+        var permissions = await _teamsModule.GetMemberPermissionsAsync(identity.Id);
+        if (permissions.Count > 0)
         {
-            Id = session.Id.ToString(),
-            IdentityId = identity.Id,
-            Permissions = new List<MemberPermissionDto>()
-        });     
+            var permission = permissions[0];
+            projectToken = _tokenProvider.CreateProjectToken(permission);
+        }
+        _identityRepository.Add(identity);
+        var refreshToken = await _tokenProvider.CreateRefreshToken(userToken, projectToken, identity.Id);
+        
+        
+
+        await _identityRepository.SaveChangesAsync();
+        return Result.Ok(new LoginResultDto(userToken, projectToken, refreshToken));
     }
 }

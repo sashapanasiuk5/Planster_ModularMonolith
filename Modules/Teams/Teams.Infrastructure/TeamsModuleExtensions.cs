@@ -18,7 +18,6 @@ public static class TeamsModuleExtensions
         services.AddDbContext<TeamsDbContext>(opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRandomStringGenerator, RandomStringGenerator>();
-        services.AddScoped<ITeamsModule, TeamsModule>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProjectCommand).GetTypeInfo().Assembly));
     }
 }
