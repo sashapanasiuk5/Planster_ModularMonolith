@@ -2,8 +2,8 @@ namespace Teams.Domain.Enums;
 
 public enum ProjectRole
 {
-    Customer,
-    Employee,
-    Manager,
-    Owner
+    Customer = 0,
+    Employee = 1,
+    Manager = 2,
+    Owner = 3
 }

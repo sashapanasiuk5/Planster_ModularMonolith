@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Shared.Contracts.Constants;
 using Teams.Domain.Enums;
 
 namespace Shared.Api.Attributes;
@@ -18,22 +19,28 @@ public class ProjectAuthAttribute: Attribute, IAuthorizationFilter
         var projectId = context.RouteData.Values["projectId"]?.ToString();
         if (projectId == null)
         {
+            throw new ArgumentException("Project Id is not provided");
+        }
+
+        var roleIdString = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == TokenConstants.ROLE)?.Value;
+        var projectIdString = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == TokenConstants.PROJECT_ID)?.Value;
+
+        if (projectId != projectIdString)
+        {
             context.Result = new ForbidResult();
+            return;
         }
         
-        var roleString = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == $"project_{projectId}")?.Value;
-        if (string.IsNullOrEmpty(roleString))
+        if (roleIdString == null || !int.TryParse(roleIdString, out int roleId))
+        {
+            context.Result = new ForbidResult();
+            return;
+        }
+
+        var role = (ProjectRole)roleId;
+        if (!_grantedRoles.Contains(role))
         {
             context.Result = new ForbidResult();
         }
-        else
-        {
-            var role = Enum.Parse<ProjectRole>(roleString);
-            if (!_grantedRoles.Contains(role))
-            {
-                context.Result = new ForbidResult();
-            }
-        }
-        
     }
 }

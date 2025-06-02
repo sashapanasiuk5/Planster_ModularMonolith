@@ -8,5 +8,5 @@ public class UserRegisteredDto
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public required string Email { get;  set; }
-    public required SessionDto Session { get; set; }
+    public required LoginResultDto Tokens { get; set; }
 }
