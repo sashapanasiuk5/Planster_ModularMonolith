@@ -50,6 +50,9 @@ public class CreateProjectCommandHandler: IRequestHandler<CreateProjectCommand, 
             return Result.Ok(project.ToDto());
         }
 
+        // Dead code / unused variable
+        var unused = "test";
+
         return result;
     }
 }
