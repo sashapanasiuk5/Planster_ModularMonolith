@@ -26,6 +26,11 @@ public class MembersController: BaseController
     [Route("members/{memberId}/projects")]
     public async Task<IActionResult> GetMemberProjects([FromRoute] int memberId)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         return HandleResult(await _mediator.Send(new GetMemberProjectsCommand(memberId)));
     }
     
@@ -34,6 +39,11 @@ public class MembersController: BaseController
     [Route("projects/{projectId}/members")]
     public async Task<IActionResult> AcceptInvitation([FromBody] AcceptInvitationDto acceptDto, [FromRoute] int projectId)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var memberId = GetAuthenticatedUserId();
         return HandleResult(await _mediator.Send(new AcceptInvitationCommand(acceptDto, projectId, memberId)));
     }
@@ -43,6 +53,11 @@ public class MembersController: BaseController
     [Route("projects/{projectId}/members/{memberId}")]
     public async Task<IActionResult> DeleteMember([FromRoute] int projectId, [FromRoute] int memberId)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         return HandleResult(await _mediator.Send(new DeleteMemberCommand(memberId, projectId)));
     }
 
@@ -51,6 +66,12 @@ public class MembersController: BaseController
     [ProjectAuth(ProjectRole.Owner, ProjectRole.Employee, ProjectRole.Customer, ProjectRole.Manager)]
     public async Task<IActionResult> GetMembersAsync([FromRoute] int projectId)
     {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         return HandleResult(await _mediator.Send(new GetMembersQuery(projectId)));
     }
 }
