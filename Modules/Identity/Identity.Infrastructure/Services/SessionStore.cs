@@ -30,7 +30,7 @@ public class SessionStore: ISessionStore
             ContractResolver = new PrivateResolver()
         });
         if(session == null)
-            throw new Exception("Cannot convert session json to Session");
+            throw new Exception("Cannot convert session json to Session.");
         return session.ToSession();
     }
 
